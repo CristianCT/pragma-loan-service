@@ -4,7 +4,6 @@ import co.com.cristiancabarcas.api.dtos.CustomResponse;
 import co.com.cristiancabarcas.api.dtos.loans.LoanRequest;
 import co.com.cristiancabarcas.api.dtos.loans.LoanResponse;
 import co.com.cristiancabarcas.api.utils.BuilderResponse;
-import co.com.cristiancabarcas.model.commons.LoanType;
 import co.com.cristiancabarcas.model.loan.Loan;
 import co.com.cristiancabarcas.usecase.saveloan.SaveLoanUseCase;
 import io.swagger.v3.oas.annotations.Operation;
