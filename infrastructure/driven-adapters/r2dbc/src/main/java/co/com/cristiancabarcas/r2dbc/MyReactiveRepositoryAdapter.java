@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Repository
@@ -46,6 +48,14 @@ public class MyReactiveRepositoryAdapter
                         DataIntegrityViolationException.class.equals(throwable.getClass())
                                 ? Mono.empty()
                                 : Mono.error(throwable));
+    }
+
+    @Override
+    @Transactional
+    public Mono<List<Loan>> findByParams(Map<String, String> params) {
+
+        log.info(String.format("Finding loans by params: %s", params));
+        return Mono.empty();
     }
 
 }

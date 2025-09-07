@@ -1,20 +1,22 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: "loan-microservice"
   devtools:
     add-properties: false
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/migration/schema.sql
+  flyway:
+    url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    user: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
   h2:
     console:
       enabled: true
       path: "/h2"
   profiles:
     include: null
+  main:
+    allow-bean-definition-overriding: true
 management:
   endpoints:
     web:
@@ -27,10 +29,19 @@ management:
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 
+logging:
+  level:
+    org.flywaydb: INFO
+    co.com.cristiancabarcas: DEBUG
+
 adapters:
   r2dbc:
-    host: localhost
-    port: 3306
-    database: pragma
-    username: pragma_developer
-    password: PragmaDeveloper2025
+    host: ${DATABASE_HOST:localhost}
+    port: ${DATABASE_PORT:3306}
+    database: ${DATABASE_NAME:pragma}
+    username: ${DATABASE_USERNAME:pragma}
+    password: ${DATABASE_PASSWORD:pragma}
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:pragma}
