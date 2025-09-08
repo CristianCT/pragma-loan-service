@@ -1,7 +1,7 @@
 package co.com.cristiancabarcas.usecase.saveloan;
 
-import co.com.cristiancabarcas.model.commons.LoanType;
-import co.com.cristiancabarcas.model.commons.Status;
+import co.com.cristiancabarcas.model.commons.LoanStatusEnum;
+import co.com.cristiancabarcas.model.commons.LoanTypeEnum;
 import co.com.cristiancabarcas.model.commons.errors.InvalidAmountException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidLoanTypeException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidTermInMonthsException;
@@ -40,8 +40,8 @@ class SaveLoanUseCaseTest {
         loan = Loan.builder()
                 .amount(1000000000.0)
                 .termInMonths(12)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(co.com.cristiancabarcas.model.commons.LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         when(loanRepository.save(any(Loan.class), any(String.class), any(Integer.class)))
@@ -66,8 +66,8 @@ class SaveLoanUseCaseTest {
         loan = Loan.builder()
                 .amount(1000000000.0)
                 .termInMonths(12)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(co.com.cristiancabarcas.model.commons.LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         StepVerifier.create(saveLoanUseCase.execute(loan, "1", null))
@@ -82,8 +82,8 @@ class SaveLoanUseCaseTest {
         loan = Loan.builder()
                 .amount(0.0)
                 .termInMonths(12)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         StepVerifier.create(saveLoanUseCase.execute(loan, "1", 1))
@@ -92,8 +92,8 @@ class SaveLoanUseCaseTest {
 
         loan = Loan.builder()
                 .termInMonths(12)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(co.com.cristiancabarcas.model.commons.LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         StepVerifier.create(saveLoanUseCase.execute(loan, "1", 1))
@@ -108,8 +108,8 @@ class SaveLoanUseCaseTest {
         loan = Loan.builder()
                 .amount(1000000000.0)
                 .termInMonths(0)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(co.com.cristiancabarcas.model.commons.LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         StepVerifier.create(saveLoanUseCase.execute(loan, "1", 1))
@@ -118,8 +118,8 @@ class SaveLoanUseCaseTest {
 
         loan = Loan.builder()
                 .amount(1000000000.0)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(co.com.cristiancabarcas.model.commons.LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         StepVerifier.create(saveLoanUseCase.execute(loan, "1", 1))
@@ -134,8 +134,8 @@ class SaveLoanUseCaseTest {
         loan = Loan.builder()
                 .amount(1000000000.0)
                 .termInMonths(12)
-                .loanType(LoanType.PERSONAL)
-                .status(Status.PENDING_REVIEW)
+                .loanType(co.com.cristiancabarcas.model.commons.LoanTypeEnum.PERSONAL)
+                .status(LoanStatusEnum.PENDING_REVIEW)
                 .build();
 
         when(loanRepository.save(any(Loan.class), any(String.class), any(Integer.class)))

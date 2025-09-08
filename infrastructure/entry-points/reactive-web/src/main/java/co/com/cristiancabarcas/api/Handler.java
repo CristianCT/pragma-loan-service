@@ -3,19 +3,24 @@ package co.com.cristiancabarcas.api;
 import co.com.cristiancabarcas.api.dtos.CustomResponse;
 import co.com.cristiancabarcas.api.dtos.loans.LoanRequest;
 import co.com.cristiancabarcas.api.dtos.loans.LoanResponse;
+import co.com.cristiancabarcas.api.dtos.loans.RevisionLoanResponseItem;
 import co.com.cristiancabarcas.api.utils.BuilderResponse;
 import co.com.cristiancabarcas.model.loan.Loan;
+import co.com.cristiancabarcas.usecase.listreviewloans.ListReviewLoansUseCase;
 import co.com.cristiancabarcas.usecase.saveloan.SaveLoanUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -25,6 +30,7 @@ public class Handler {
 
     private final ObjectMapper mapper;
     private final SaveLoanUseCase saveLoanUseCase;
+    private final ListReviewLoansUseCase listReviewLoansUseCase;
     private static final Logger log = Logger.getLogger(Handler.class.getName());
 
     @PostMapping
@@ -43,6 +49,25 @@ public class Handler {
                     return result;
                 })
                 .map(BuilderResponse::buildCreatedLoan);
+    }
+
+    @GetMapping
+    @Operation()
+    public Mono<ResponseEntity<CustomResponse<List<RevisionLoanResponseItem>>>> listLoansForRevision() {
+        return listReviewLoansUseCase.execute(Map.of())
+                .doOnNext(loans -> log.info("Number of loans for review: " + loans.size()))
+                .map(loans -> loans.stream()
+                        .map(loan -> {
+                            RevisionLoanResponseItem item = mapper.map(loan, RevisionLoanResponseItem.class);
+                            item.setEmail(loan.getUser().getEmail());
+                            item.setName(loan.getUser().getName());
+                            item.setBaseSalary(loan.getUser().getBaseSalary());
+                            item.setTaxRate(loan.getLoanType().getTaxRate());
+                            item.setLoanType(loan.getLoanType().getName());
+                            item.setStatus(loan.getStatus().getName());
+                            return item;
+                        }).toList())
+                .map(BuilderResponse::buildOkListLoans);
     }
 
 }

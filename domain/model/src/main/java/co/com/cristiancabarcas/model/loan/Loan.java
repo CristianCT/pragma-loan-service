@@ -1,7 +1,8 @@
 package co.com.cristiancabarcas.model.loan;
 
-import co.com.cristiancabarcas.model.commons.LoanType;
-import co.com.cristiancabarcas.model.commons.Status;
+import co.com.cristiancabarcas.model.loantype.LoanType;
+import co.com.cristiancabarcas.model.status.LoanStatus;
+import co.com.cristiancabarcas.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class Loan {
 
     private Double amount;
     private Integer termInMonths;
+    private User user;
     private LoanType loanType;
-    private Status status;
+    private LoanStatus status;
+    private Double amountPerMonth;
 }

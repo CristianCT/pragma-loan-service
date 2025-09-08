@@ -1,10 +1,14 @@
 package co.com.cristiancabarcas.r2dbc;
 
-import co.com.cristiancabarcas.model.commons.LoanType;
-import co.com.cristiancabarcas.model.commons.Status;
+import co.com.cristiancabarcas.model.commons.LoanStatusEnum;
+import co.com.cristiancabarcas.model.commons.LoanTypeEnum;
 import co.com.cristiancabarcas.model.loan.Loan;
 import co.com.cristiancabarcas.model.loan.gateways.LoanRepository;
+import co.com.cristiancabarcas.model.loantype.LoanType;
+import co.com.cristiancabarcas.model.status.LoanStatus;
+import co.com.cristiancabarcas.model.user.User;
 import co.com.cristiancabarcas.r2dbc.entities.LoanEntity;
+import co.com.cristiancabarcas.r2dbc.entities.RevisionLoansEntity;
 import co.com.cristiancabarcas.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,14 +38,17 @@ public class MyReactiveRepositoryAdapter
         LoanEntity loanEntity = mapper.map(loan, LoanEntity.class);
         loanEntity.setUserId(userId);
         loanEntity.setLoanTypeId(loanType);
-        loanEntity.setStatusId(Status.PENDING_REVIEW.getCode());
+        loanEntity.setStatusId(LoanStatusEnum.PENDING.getCode());
 
         log.info("Saving loan");
         return repository.save(loanEntity)
                 .map(loanSaved -> {
                     Loan result = mapper.map(loanSaved, Loan.class);
-                    result.setLoanType(LoanType.fromCode(loanSaved.getLoanTypeId()));
-                    result.setStatus(Status.fromCode(loanSaved.getStatusId()));
+                    LoanStatusEnum loanStatusEnum = LoanStatusEnum.fromCode(loanSaved.getStatusId());
+                    LoanTypeEnum loanType1 = LoanTypeEnum.fromCode(loanSaved.getLoanTypeId());
+
+                    result.setLoanType(LoanType.builder().name(loanType1.getName()).description(loanType1.getDescription()).build());
+                    result.setStatus(LoanStatus.builder().name(loanStatusEnum.getName()).description(loanStatusEnum.getDescription()).build());
                     return result;
                 })
                 .onErrorResume(throwable ->
@@ -55,7 +62,28 @@ public class MyReactiveRepositoryAdapter
     public Mono<List<Loan>> findByParams(Map<String, String> params) {
 
         log.info(String.format("Finding loans by params: %s", params));
-        return Mono.empty();
+
+        return repository.findLoansForRevision()
+                .map(this::buildLoan)
+                .collectList()
+                .switchIfEmpty(Mono.empty());
     }
 
+    private Loan buildLoan(RevisionLoansEntity revisionLoansEntity) {
+
+        return Loan.builder()
+                .amount(revisionLoansEntity.getAmount())
+                .termInMonths(revisionLoansEntity.getTermInMonths())
+                .status(LoanStatus.builder().name(revisionLoansEntity.getStatus()).build())
+                .loanType(LoanType.builder()
+                        .name(revisionLoansEntity.getLoanType())
+                        .taxRate(revisionLoansEntity.getTaxRate())
+                        .build())
+                .user(User.builder()
+                        .email(revisionLoansEntity.getEmail())
+                        .name(revisionLoansEntity.getName())
+                        .baseSalary(revisionLoansEntity.getBaseSalary())
+                        .build())
+                .build();
+    }
 }

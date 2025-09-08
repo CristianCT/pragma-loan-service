@@ -6,6 +6,7 @@ import co.com.cristiancabarcas.model.commons.errors.InvalidAmountException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidLoanTypeException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidStatusException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidTermInMonthsException;
+import co.com.cristiancabarcas.model.commons.errors.LoansEmptyException;
 import co.com.cristiancabarcas.model.commons.errors.UserNotExistException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -48,5 +49,10 @@ public class HandlerControllerErrors {
         return BuilderResponse.buildErrorResponse(ex.getMessage());
     }
 
+    @ExceptionHandler(LoansEmptyException.class)
+    public ResponseEntity<CustomResponse<Void>> handleException(LoansEmptyException ex) {
+        log.warning(ex.getMessage());
+        return BuilderResponse.buildErrorResponse(ex.getMessage());
+    }
 
 }
