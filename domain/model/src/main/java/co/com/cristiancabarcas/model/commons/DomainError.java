@@ -8,7 +8,8 @@ public enum DomainError {
     INVALID_AMOUNT("Invalid amount", "The amount must be greater than zero"),
     INVALID_TERM_IN_MONTHS("Invalid term in months", "The term in months must be between 1 and 60"),
     INVALID_LOAN_TYPE("Invalid loan type", "The loan type must be one of the predefined types"),
-    LOANS_EMPTY("Loans empty", "There are no loans to display");
+    LOANS_EMPTY("Loans empty", "There are no loans to display"),
+    USER_INVALID("User invalid", "The user is not authorized to perform this operation");
 
     private final String type;
     private final String message;

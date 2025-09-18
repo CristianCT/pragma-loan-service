@@ -4,6 +4,7 @@ import co.com.cristiancabarcas.model.commons.DomainError;
 import co.com.cristiancabarcas.model.commons.errors.InvalidAmountException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidLoanTypeException;
 import co.com.cristiancabarcas.model.commons.errors.InvalidTermInMonthsException;
+import co.com.cristiancabarcas.model.commons.errors.UserInvalidLoanException;
 import co.com.cristiancabarcas.model.commons.errors.UserNotExistException;
 import co.com.cristiancabarcas.model.loan.Loan;
 import co.com.cristiancabarcas.model.loan.gateways.LoanRepository;
@@ -20,15 +21,20 @@ public class SaveLoanUseCase {
     private final LoanRepository loanRepository;
     private static final Logger log = Logger.getLogger(SaveLoanUseCase.class.getName());
 
-    public Mono<Loan> execute(Loan loan, String userId, Integer loanType) {
+    public Mono<Loan> execute(Loan loan, String userId, Integer loanType, String userRequest) {
         return Mono.just(loan)
-                .map(newLoan -> validLoan(newLoan, loanType))
+                .map(newLoan -> validLoan(newLoan, loanType, userId, userRequest))
                 .flatMap(loanValidated -> loanRepository.save(loanValidated, userId, loanType))
                 .switchIfEmpty(Mono.error(new UserNotExistException("The user does not exist: " + userId)))
                 .onErrorResume(Mono::error);
     }
 
-    private Loan validLoan(Loan loan, Integer loanType) {
+    private Loan validLoan(Loan loan, Integer loanType, String userId, String userRequest) {
+        if (!userId.equalsIgnoreCase(userRequest)) {
+            log.warning(DomainError.USER_INVALID.getMessage());
+            throw new UserInvalidLoanException(DomainError.USER_INVALID.getMessage());
+        }
+
         if (isNull(loanType)) {
             log.warning(DomainError.INVALID_LOAN_TYPE.getMessage());
             throw new InvalidLoanTypeException(DomainError.INVALID_LOAN_TYPE.getMessage());
